@@ -1,0 +1,7 @@
+api_endpoints:
+  - endpoint: http://servicex-servicex-app:8000
+    name: servicex-local
+    type: uproot
+
+cache_path: /tmp/
+shortened_downloaded_filename: true
