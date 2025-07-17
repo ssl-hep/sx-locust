@@ -68,6 +68,8 @@ spec:
         {{- if .Values.volumes.sx_locust_local.enabled }}
         - name: sx-locust-volume
           mountPath: /app/sx_locust
+        {{- end }}
+        {{- if .Values.volumes.servicex_yaml_local.enabled }}
         - name: servicex-yaml-config
           mountPath: /app/servicex.yaml
         {{- end }}
@@ -86,6 +88,8 @@ spec:
         hostPath:
           path: /mnt/sx-locust/sx_locust
           type: Directory
+      {{- end }}
+      {{- if .Values.volumes.servicex_yaml_local.enabled }}
       - name: servicex-yaml-config
         hostPath:
           path: /mnt/sx-locust/servicex.yaml
