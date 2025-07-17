@@ -1,0 +1,39 @@
+[tool.poetry]
+name = "sx-locust"
+version = "0.1.0"
+description = "ServiceX load testing with Locust"
+authors = ["Your Name <your.email@example.com>"]
+readme = "README.md"
+packages = [{include = "sx_locust"}]
+
+[tool.poetry.dependencies]
+python = "<3.14,>=3.9"
+locust = "^2.17.0"
+pyyaml = "^6.0.0"
+requests = "^2.31.0"
+pyopenssl = "25.0.0"
+servicex = "^3.2.1"
+asgiref = "^3.9.1"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^7.4.0"
+black = "^23.0.0"
+flake8 = "^6.0.0"
+mypy = "^1.5.0"
+
+[tool.poetry.scripts]
+locust-dev = "locust:main"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.black]
+line-length = 88
+target-version = ['py310']
+
+[tool.mypy]
+python_version = "3.11"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true

@@ -1,0 +1,57 @@
+image:
+  repository: sx-locust
+  tag: latest
+  pullPolicy: Never
+  pullSecrets: []
+
+scheduler:
+  replicas: 1
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+
+worker:
+  replicas: 3
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 200m
+      memory: 256Mi
+
+service:
+  type: ClusterIP
+  port: 8089
+  targetPort: 8089
+
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+  hosts:
+    - host: localhost
+      paths:
+        - path: /
+          pathType: Prefix
+  tls: []
+
+env:
+  - name: SERVICEX_ENDPOINT
+    value: "http://servicex-servicex-app:8000"
+  - name: LOG_LEVEL
+    value: "INFO"
+  - name: PYTHONUNBUFFERED
+    value: "1"
+  - name: PYTHONDONTWRITEBYTECODE
+    value: "1"
+
+volumes:
+  sx_locust_local:
+    enabled: false
+  servicex_yaml_local:
+    enabled: false

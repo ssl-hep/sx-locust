@@ -1,0 +1,93 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "locust.fullname" . }}-scheduler
+  labels:
+    {{- include "locust.labels" . | nindent 4 }}
+    component: scheduler
+spec:
+  replicas: {{ .Values.scheduler.replicas }}
+  serviceName: {{ include "locust.fullname" . }}-scheduler
+  selector:
+    matchLabels:
+      {{- include "locust.selectorLabels" . | nindent 6 }}
+      component: scheduler
+  template:
+    metadata:
+      labels:
+        {{- include "locust.selectorLabels" . | nindent 8 }}
+        component: scheduler
+    spec:
+      containers:
+      - name: locust
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        command: ["python", "-m", "locust"]
+        args:
+          - --master
+          - --web-host=0.0.0.0
+          - --web-port=8089
+          - --locustfile=sx_locust/locustfile.py
+        ports:
+        - containerPort: 8089
+          name: web
+        - containerPort: 5557
+          name: sched-bind
+        - containerPort: 5558
+          name: sched-bind-2
+        resources:
+          {{- toYaml .Values.scheduler.resources | nindent 10 }}
+        livenessProbe:
+          httpGet:
+            path: /
+            port: web
+          initialDelaySeconds: 60
+          periodSeconds: 30
+          timeoutSeconds: 10
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /
+            port: web
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        env:
+        {{- range .Values.env }}
+        - name: {{ .name }}
+          value: {{ .value | quote }}
+        {{- end }}
+        volumeMounts:
+        - name: tmp-volume
+          mountPath: /tmp
+        - name: cache-volume
+          mountPath: /tmp/servicex_cache
+        - name: logs-volume
+          mountPath: /tmp/logs
+        {{- if .Values.volumes.sx_locust_local.enabled }}
+        - name: sx-locust-volume
+          mountPath: /app/sx_locust
+        - name: servicex-yaml-config
+          mountPath: /app/servicex.yaml
+        {{- end }}
+      volumes:
+      - name: tmp-volume
+        emptyDir:
+          sizeLimit: 100Mi
+      - name: cache-volume
+        emptyDir:
+          sizeLimit: 500Mi
+      - name: logs-volume
+        emptyDir:
+          sizeLimit: 100Mi
+      {{- if .Values.volumes.sx_locust_local.enabled }}
+      - name: sx-locust-volume
+        hostPath:
+          path: /mnt/sx-locust/sx_locust
+          type: Directory
+      - name: servicex-yaml-config
+        hostPath:
+          path: /mnt/sx-locust/servicex.yaml
+          type: File
+      {{- end }}

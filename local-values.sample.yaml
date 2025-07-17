@@ -1,0 +1,9 @@
+env:
+  - name: SERVICEX_ENDPOINT
+    value: "http://servicex-servicex-app:8000"
+
+volumes:
+  sx_locust_local:
+    enabled: enabled
+  servicex_yaml_local:
+    enabled: enabled
