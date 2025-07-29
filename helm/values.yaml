@@ -18,11 +18,11 @@ worker:
   replicas: 3
   resources:
     requests:
-      cpu: 100m
-      memory: 128Mi
+      cpu: 0.5
+      memory: 0.5Gi
     limits:
-      cpu: 200m
-      memory: 256Mi
+      cpu: 1
+      memory: 1Gi
 
 service:
   type: ClusterIP
