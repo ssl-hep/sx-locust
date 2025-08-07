@@ -1,7 +1,4 @@
-def locust_task(func):
-    """Decorator to mark a function as a ServiceX locust test."""
-    func.__is_servicex_locust_test__ = True
-    return func
+from sx_locust.worker import locust_task
 
 class ServiceXTasks:
     @locust_task
