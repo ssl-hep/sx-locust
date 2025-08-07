@@ -1,10 +1,10 @@
-def locust_test(func):
+def locust_task(func):
     """Decorator to mark a function as a ServiceX locust test."""
     func.__is_servicex_locust_test__ = True
     return func
 
 class ServiceXTest:
-    @locust_test
+    @locust_task
     def uproot_raw_query(self):
         from servicex import query, dataset
 
@@ -31,7 +31,7 @@ class ServiceXTest:
 
         return spec
 
-    @locust_test
+    @locust_task
     def func_adl_xaod_simple(self):
         from servicex import query as q, dataset
         query = q.FuncADL_ATLASr22()  # type: ignore
