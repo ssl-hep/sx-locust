@@ -2,11 +2,11 @@ from locust import User, between
 from sx_locust.config import get_config
 import logging
 
-from sx_locust.tests import ServiceXTest
+from sx_locust.tasks import ServiceXTasks
 from sx_locust.util import ServiceXUserMeta
 
 
-class ServiceXUser(ServiceXTest, User, metaclass=ServiceXUserMeta):
+class ServiceXUser(ServiceXTasks, User, metaclass=ServiceXUserMeta):
     wait_time = between(1, 5)
 
     def __init__(self, *args, **kwargs):

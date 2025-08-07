@@ -3,7 +3,7 @@ def locust_task(func):
     func.__is_servicex_locust_test__ = True
     return func
 
-class ServiceXTest:
+class ServiceXTasks:
     @locust_task
     def uproot_raw_query(self):
         from servicex import query, dataset
