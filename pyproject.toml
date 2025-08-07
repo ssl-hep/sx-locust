@@ -14,6 +14,7 @@ requests = "^2.31.0"
 pyopenssl = "25.0.0"
 servicex = "^3.2.1"
 asgiref = "^3.9.1"
+func-adl-servicex-xaodr22 = "^2.4.4.22.2.113"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.4.0"

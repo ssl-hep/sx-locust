@@ -1174,6 +1174,21 @@ make-it-sync = "*"
 test = ["astunparse", "black", "coverage", "flake8", "hatch", "isort", "numpy", "pytest", "pytest-asyncio", "pytest-cov", "twine", "wheel"]
 
 [[package]]
+name = "func-adl-servicex-xaodr22"
+version = "2.4.4.22.2.113"
+description = "func-adl typed datasets for Servicex for xAOD R22 22.2.113"
+optional = false
+python-versions = ">=3.8"
+groups = ["main"]
+files = [
+    {file = "func_adl_servicex_xaodr22-2.4.4.22.2.113-py3-none-any.whl", hash = "sha256:30fe2bfdd2b33c93d6335db585a4bec03909e802ebea58bfd5e3fd77307690dc"},
+    {file = "func_adl_servicex_xaodr22-2.4.4.22.2.113.tar.gz", hash = "sha256:bc2b200955b6602d3cb9ed30c27ebe682678687cb30299b225108a1849927556"},
+]
+
+[package.dependencies]
+servicex = ">=3.0.0b1"
+
+[[package]]
 name = "gevent"
 version = "25.5.1"
 description = "Coroutine-based network library"
@@ -3596,4 +3611,4 @@ testing = ["coverage[toml]", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "2.1"
 python-versions = "<3.14,>=3.9"
-content-hash = "4e48767368887002be47acba8f32ed61283efb614b5d02b585b2ad3051dbe866"
+content-hash = "55a34e1c9792b133601897840e7e76a26fb328d1bb1f1ac5df493a27527f2030"
