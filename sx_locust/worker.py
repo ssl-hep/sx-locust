@@ -13,20 +13,43 @@ def run_servicex_test_worker(method_name, result_queue, error_queue):
     """Worker function to run ServiceX tests in a separate process."""
     import os
     import sys
+    import io
     import tempfile
 
-    # Create temporary files to capture stdout and stderr
-    stdout_file = tempfile.NamedTemporaryFile(mode='w+', delete=False)
-    stderr_file = tempfile.NamedTemporaryFile(mode='w+', delete=False)
+    class TeeStream:
+        """Stream wrapper that writes to both original stream and captures content."""
+        def __init__(self, original_stream, capture_stream):
+            self.original = original_stream
+            self.capture = capture_stream
+            
+        def write(self, data):
+            # Write to both original (console) and capture stream
+            self.original.write(data)
+            self.original.flush()  # Ensure real-time output
+            self.capture.write(data)
+            return len(data)
+            
+        def flush(self):
+            self.original.flush()
+            self.capture.flush()
+            
+        def __getattr__(self, name):
+            # Delegate other attributes to original stream
+            return getattr(self.original, name)
 
+    # Create string buffers to capture output
+    stdout_capture = io.StringIO()
+    stderr_capture = io.StringIO()
+    
     # Save original stdout/stderr
     original_stdout = sys.stdout
     original_stderr = sys.stderr
 
     try:
-        # Redirect stdout and stderr to temp files
-        sys.stdout = stdout_file
-        sys.stderr = stderr_file
+        # Set up tee streams that write to both console and capture buffers
+        sys.stdout = TeeStream(original_stdout, stdout_capture)
+        sys.stderr = TeeStream(original_stderr, stderr_capture)
+        
         # Import here to avoid circular imports and ensure fresh imports in worker process
         from sx_locust.tasks import ServiceXTasks
 
@@ -47,18 +70,12 @@ def run_servicex_test_worker(method_name, result_queue, error_queue):
         result = deliver(
             spec,
             ignore_local_cache=True,
-            progress_bar='none'
+            # progress_bar='none'
         )
 
-        # Flush and read captured output
-        stdout_file.flush()
-        stderr_file.flush()
-
-        # Read the captured content
-        stdout_file.seek(0)
-        stderr_file.seek(0)
-        stdout_content = stdout_file.read()
-        stderr_content = stderr_file.read()
+        # Get captured content
+        stdout_content = stdout_capture.getvalue()
+        stderr_content = stderr_capture.getvalue()
 
         # Put successful result in queue
         result_queue.put({
@@ -70,13 +87,9 @@ def run_servicex_test_worker(method_name, result_queue, error_queue):
         })
 
     except Exception as e:
-        # Flush and read captured output even on failure
-        stdout_file.flush()
-        stderr_file.flush()
-        stdout_file.seek(0)
-        stderr_file.seek(0)
-        stdout_content = stdout_file.read()
-        stderr_content = stderr_file.read()
+        # Get captured content even on failure
+        stdout_content = stdout_capture.getvalue()
+        stderr_content = stderr_capture.getvalue()
 
         # Put error information in error queue
         error_queue.put({
@@ -92,17 +105,5 @@ def run_servicex_test_worker(method_name, result_queue, error_queue):
         # Restore original stdout/stderr
         sys.stdout = original_stdout
         sys.stderr = original_stderr
-
-        # Clean up temp files
-        try:
-            stdout_file.close()
-            os.unlink(stdout_file.name)
-        except:
-            pass
-        try:
-            stderr_file.close()
-            os.unlink(stderr_file.name)
-        except:
-            pass
 
 
