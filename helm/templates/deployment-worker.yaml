@@ -17,6 +17,18 @@ spec:
         {{- include "locust.selectorLabels" . | nindent 8 }}
         component: worker
     spec:
+      initContainers:
+      - name: wait-for-scheduler
+        image: busybox:1.35
+        command: ['sh', '-c']
+        args:
+          - |
+            echo "Waiting for scheduler service to be ready..."
+            until nc -z {{ include "locust.fullname" . }}-scheduler 5557; do
+              echo "Scheduler not ready, waiting 5 seconds..."
+              sleep 5
+            done
+            echo "Scheduler is ready!"
       containers:
       - name: locust
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
