@@ -62,11 +62,19 @@ def make_locust_task(method_name):
                     self.logger.error(f"ServiceX test {method_name} failed: {error_info['error']}")
                     self.logger.error(f"Traceback: {error_info['traceback']}")
 
-                    # Log captured stdout/stderr
+                    # Log captured stdout/stderr to Locust logs
                     if error_info.get('stdout'):
-                        self.logger.info(f"ServiceX {method_name} stdout: {error_info['stdout']}")
+                        stdout_lines = error_info['stdout'].strip()
+                        if stdout_lines:
+                            for line in stdout_lines.split('\n'):
+                                if line.strip():
+                                    self.logger.info(f"[{method_name}] {line}")
                     if error_info.get('stderr'):
-                        self.logger.error(f"ServiceX {method_name} stderr: {error_info['stderr']}")
+                        stderr_lines = error_info['stderr'].strip()
+                        if stderr_lines:
+                            for line in stderr_lines.split('\n'):
+                                if line.strip():
+                                    self.logger.error(f"[{method_name}] {line}")
 
                     raise Exception(f"ServiceX test {method_name} failed: {error_info['error']}")
                 except Empty:
@@ -82,11 +90,19 @@ def make_locust_task(method_name):
                     self.logger.info(f"ServiceX test {method_name} completed successfully")
                     self.logger.info(f"Result spec keys: {result_info['spec_keys']}")
 
-                    # Log captured stdout/stderr
+                    # Log captured stdout/stderr to Locust logs
                     if result_info.get('stdout'):
-                        self.logger.info(f"ServiceX {method_name} stdout: {result_info['stdout']}")
+                        stdout_lines = result_info['stdout'].strip()
+                        if stdout_lines:
+                            for line in stdout_lines.split('\n'):
+                                if line.strip():
+                                    self.logger.info(f"[{method_name}] {line}")
                     if result_info.get('stderr'):
-                        self.logger.info(f"ServiceX {method_name} stderr: {result_info['stderr']}")
+                        stderr_lines = result_info['stderr'].strip()
+                        if stderr_lines:
+                            for line in stderr_lines.split('\n'):
+                                if line.strip():
+                                    self.logger.info(f"[{method_name}] {line}")
 
                     return result_info  # Return the info dict, not a non-existent 'result' key
                 else:

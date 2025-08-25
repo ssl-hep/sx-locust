@@ -69,7 +69,7 @@ def run_servicex_test_worker(method_name, result_queue, error_queue):
         from servicex import deliver
         result = deliver(
             spec,
-            ignore_local_cache=True,
+            # ignore_local_cache=True,
             # progress_bar='none'
         )
 
